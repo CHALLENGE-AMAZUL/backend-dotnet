@@ -1,24 +1,26 @@
+using System.Diagnostics.CodeAnalysis;
+
 public class PropostaConteudo {
     public int Id { get; set; }
     public string Titulo { get; set; } = string.Empty;
-    public enum AreaAplicacao Area { get; set; }
-    //public enum Status StatusConteudo;
-    public bool PropostaAprovada = false;
-    public DateTime DataCriacao; 
+    public AreaAplicacao Area { get; set; }
+    public string Url { get; set; } = string.Empty;
+    public Status StatusAnalise { get; set; }
+    public string JustificativaAnalise { get; set; } = string.Empty;
+    public DateTime DataCriacao { get; set; }
 }
 
-//public enum Status
-//{
-//    RASCUNHO,
-//    PUBLICADO,
-//    ARQUIVADO
-//}
-
+public enum Status
+{
+    EmAnalise,
+    Aprovada,
+    Rejeitada
+}
 public enum AreaAplicacao
 {
-    ENERGIA,
-    SAUDE,
-    AGRICULTURA,
-    INDUSTRIA,
-    PESQUISA
+    Energia = 1,
+    Saude = 2,
+    Agricultura = 3,
+    Industria = 4,
+    Pesquisa = 5
 }
