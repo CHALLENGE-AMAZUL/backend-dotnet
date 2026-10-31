@@ -1,30 +1,32 @@
-﻿public class Program
+public class Program
 {
     public static void Main()
     {
-        while(true)
+        var service = new PropostaService();
+
+        while (true)
         {
             try
             {
-                var service = new PropostaService();
-
-                int opc = 0;
-                int idProposta;
                 MenuConsole.ExibirMenu();
-                int.TryParse(Console.ReadLine(), out opc);
-                
+                if (!int.TryParse(Console.ReadLine(), out int opc))
+                {
+                    opc = -1;
+                }
+
                 switch (opc)
                 {
                     case 1:
                         service.ExibirLista(service.ListarPropostas());
                         break;
                     case 2:
-                        Console.WriteLine("Insira o título da proposta: ");
-                        var titulo = Console.ReadLine();
-                        Console.WriteLine("Insira a URL da proposta: ");
-                        var url = Console.ReadLine();
-                        
-                        service.CadastrarProposta(titulo, MenuConsole.LerAreaAplicacao(), url);
+                        Console.WriteLine("Insira o título da proposta (mín. 5 caracteres): ");
+                        var titulo = Console.ReadLine() ?? string.Empty;
+                        var areaCadastro = MenuConsole.LerAreaAplicacao();
+                        Console.WriteLine("Insira a URL da fonte científica (iniciando com http:// ou https://): ");
+                        var url = Console.ReadLine() ?? string.Empty;
+
+                        service.CadastrarProposta(titulo, areaCadastro, url);
                         break;
                     case 3:
                         service.ExibirLista(service.ListarPropostasEmAnalise());
@@ -37,19 +39,32 @@
                         service.ExibirProposta(MenuConsole.EntradaIdProposta());
                         break;
                     case 6:
-                        Console.WriteLine("Insira a justificativa para aprovação ou não: ");
-                        string justificativa = Console.ReadLine()!;
-                        service.AprovarProposta(MenuConsole.EntradaIdProposta(), justificativa);
+                        int idAprovar = MenuConsole.EntradaIdProposta();
+                        Console.WriteLine("Insira a justificativa técnica para aprovação (mín. 10 caracteres): ");
+                        string justificativaAprovacao = Console.ReadLine() ?? string.Empty;
+                        service.AprovarProposta(idAprovar, justificativaAprovacao);
+                        break;
+                    case 7:
+                        int idRejeitar = MenuConsole.EntradaIdProposta();
+                        Console.WriteLine("Insira a justificativa técnica para rejeição (mín. 10 caracteres): ");
+                        string justificativaRejeicao = Console.ReadLine() ?? string.Empty;
+                        service.RejeitarProposta(idRejeitar, justificativaRejeicao);
                         break;
                     case 0:
+                        Console.WriteLine("Encerrando o sistema de curadoria Lumar...");
                         return;
+                    default:
+                        Console.WriteLine("Opção inválida! Por favor, escolha uma opção de 0 a 7.");
+                        break;
                 }
-                Console.WriteLine("Pressione qualquer tecla para voltar ao menu...");
+
+                Console.WriteLine("\nPressione qualquer tecla para voltar ao menu...");
                 Console.ReadKey();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro: {ex.Message}");
+                Console.WriteLine("\nPressione qualquer tecla para voltar ao menu...");
                 Console.ReadKey();
             }
         }

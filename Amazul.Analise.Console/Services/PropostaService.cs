@@ -1,38 +1,67 @@
 using System.Text.Json;
+
 public class PropostaService
 {
-	private static readonly string _nomeArquivo = "propostas.json";
+	private static readonly string _nomeArquivo = ResolverCaminhoArquivo();
 	private static int _idAtual = 1;
+
+	private static string ResolverCaminhoArquivo()
+	{
+		if (File.Exists("propostas.json"))
+		{
+			return "propostas.json";
+		}
+
+		string caminhoSubpasta = Path.Combine("Amazul.Analise.Console", "propostas.json");
+		if (File.Exists(caminhoSubpasta))
+		{
+			return caminhoSubpasta;
+		}
+
+		return "propostas.json";
+	}
 	
 	public void ExibirLista(List<PropostaConteudo> lista)
 	{
 		if (!lista.Any())
 		{
 			Console.WriteLine("Nenhuma proposta foi encontrada na lista!");
+			return;
 		}
 			
 		foreach (var p in lista)
 		{
-			Console.WriteLine("ID: "  + p.Id);
-			Console.WriteLine("Titulo: " + p.Titulo);
-			Console.WriteLine("Área: " + p.Area);
-			Console.WriteLine("Url: " + p.Url);
-			Console.WriteLine("Status da Análise de proposta: " + p.StatusAnalise);
-			Console.WriteLine("Justificativa de aprovação ou não: " + p.JustificativaAnalise);
-			Console.WriteLine("Data da criação da proposta: " + p.DataCriacao);
+			ImprimirDetalhesProposta(p);
 		}
 	}
+
+	private static void ImprimirDetalhesProposta(PropostaConteudo p)
+	{
+		Console.WriteLine("ID: " + p.Id);
+		Console.WriteLine("Título: " + p.Titulo);
+		Console.WriteLine("Área: " + p.Area);
+		Console.WriteLine("Url: " + p.Url);
+		Console.WriteLine("Status da Análise de proposta: " + p.StatusAnalise);
+		Console.WriteLine("Justificativa de aprovação ou não: " + (string.IsNullOrWhiteSpace(p.JustificativaAnalise) ? "Pendente de análise" : p.JustificativaAnalise));
+		Console.WriteLine("Data da criação da proposta: " + p.DataCriacao.ToString("dd/MM/yyyy HH:mm:ss"));
+		Console.WriteLine("---------------------------");
+	}
+
 	public List<PropostaConteudo> ListarPropostas()
 	{
 		try
 		{
 			if (!File.Exists(_nomeArquivo))
 			{
-				Console.WriteLine("Arquivo não encontrado!");
 				return new List<PropostaConteudo>();
 			}
 			
 			string jsonRetorno = File.ReadAllText(_nomeArquivo);
+			if (string.IsNullOrWhiteSpace(jsonRetorno))
+			{
+				return new List<PropostaConteudo>();
+			}
+
 			return JsonSerializer.Deserialize<List<PropostaConteudo>>(jsonRetorno) ?? new List<PropostaConteudo>();
 		}
 		catch (Exception ex)
@@ -73,7 +102,7 @@ public class PropostaService
 		}
 		catch(Exception ex)
 		{
-			Console.WriteLine($"Erro ao persistir registro de propostas na lista no arquivo JSON:  {_nomeArquivo} - {ex.Message}");
+			Console.WriteLine($"Erro ao persistir registro de propostas na lista no arquivo JSON: {_nomeArquivo} - {ex.Message}");
 		}
 	}
 	
@@ -81,26 +110,21 @@ public class PropostaService
 	{
 		var listaPropostas = ListarPropostas();
 		
-		PropostaConteudo proposta = new PropostaConteudo();
-		proposta.Id = listaPropostas.Any() ? listaPropostas.Max(p => p.Id) + 1 : _idAtual;
+		PropostaConteudo proposta = new PropostaConteudo
+		{
+			Id = listaPropostas.Any() ? listaPropostas.Max(p => p.Id) + 1 : _idAtual,
+			Titulo = titulo.Trim(),
+			Area = areaAplicacao,
+			Url = url.Trim(),
+			StatusAnalise = Status.EmAnalise,
+			DataCriacao = DateTime.Now
+		};
 
-		if (string.IsNullOrEmpty(titulo) || titulo.Length < 5)
+		if (!proposta.ValidarCadastro(out string mensagemErro))
 		{
-			Console.WriteLine("Título inválido!");
+			Console.WriteLine(mensagemErro);
 			return null;
 		}
-		proposta.Titulo = titulo;
-		
-		if (string.IsNullOrWhiteSpace(url) || !url.StartsWith("http") )
-		{
-			Console.WriteLine("Url inválida!");
-			return null;
-		}
-		proposta.Url = url;
-		
-		proposta.Area = areaAplicacao;
-		proposta.StatusAnalise = Status.EmAnalise;
-		proposta.DataCriacao = DateTime.Now;
 		
 		listaPropostas.Add(proposta);
 		Persistir(listaPropostas);
@@ -111,19 +135,20 @@ public class PropostaService
 
 	public PropostaConteudo? ExibirProposta(int id)
 	{
-		var proposta = BuscarPorId(id);
+		var p = BuscarPorId(id);
 
-		if (proposta == null)
+		if (p == null)
 		{
 			Console.WriteLine("Proposta não encontrada!");
 			return null;
 		}
 			
-		
-		return proposta;
+		ImprimirDetalhesProposta(p);
+		return p;
 	}
 
-	public void AprovarProposta(int id, string justificativa) {
+	public void AprovarProposta(int id, string justificativa)
+	{
 		var listaPropostas = ListarPropostas();
 		var proposta = listaPropostas.Find(p => p.Id == id);
 		
@@ -135,18 +160,58 @@ public class PropostaService
 
 		if (proposta.StatusAnalise == Status.Rejeitada)
 		{
+			Console.WriteLine("Operação negada: esta proposta já foi rejeitada anteriormente!");
+			return;
+		}
+		else if (proposta.StatusAnalise == Status.Aprovada)
+		{
+			Console.WriteLine("Operação negada: esta proposta já foi aprovada anteriormente!");
 			return;
 		}
 
-		if (justificativa.Length < 10)
+		if (!PropostaConteudo.ValidarJustificativa(justificativa, out string mensagemErro))
 		{
-			Console.WriteLine("Justificativa insufuciente, deve ter no mínimo 10 caracteres!");
+			Console.WriteLine(mensagemErro);
 			return;
 		}
 		
-		proposta.JustificativaAnalise = justificativa;
+		proposta.JustificativaAnalise = justificativa.Trim();
 		proposta.StatusAnalise = Status.Aprovada;
 		Persistir(listaPropostas);
 		Console.WriteLine("Proposta de conteúdo aprovada com sucesso!");
+	}
+
+	public void RejeitarProposta(int id, string justificativa)
+	{
+		var listaPropostas = ListarPropostas();
+		var proposta = listaPropostas.Find(p => p.Id == id);
+		
+		if (proposta == null)
+		{
+			Console.WriteLine("Proposta não encontrada!");
+			return;
+		}
+
+		if (proposta.StatusAnalise == Status.Aprovada)
+		{
+			Console.WriteLine("Operação negada: esta proposta já foi aprovada anteriormente!");
+			return;
+		}
+		else if (proposta.StatusAnalise == Status.Rejeitada)
+		{
+			Console.WriteLine("Operação negada: esta proposta já foi rejeitada anteriormente!");
+			return;
+		}
+
+		if (!PropostaConteudo.ValidarJustificativa(justificativa, out string mensagemErro))
+		{
+			Console.WriteLine(mensagemErro);
+			return;
+		}
+		
+		proposta.JustificativaAnalise = justificativa.Trim();
+		proposta.StatusAnalise = Status.Rejeitada;
+		Persistir(listaPropostas);
+		Console.WriteLine("Proposta de conteúdo rejeitada com sucesso!");
 	}
 }

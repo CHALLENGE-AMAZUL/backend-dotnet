@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "Id": 1,
+    "Titulo": "Produção de Tecnécio-99m no Reator Multipropósito Brasileiro (RMB)",
+    "Area": 2,
+    "Url": "https://www.gov.br/amazul/pt-br/assuntos/reator-multiproposito-brasileiro",
+    "StatusAnalise": 1,
+    "JustificativaAnalise": "Fonte oficial da AMAZUL com dados técnicos validados sobre radiofármacos.",
+    "DataCriacao": "2026-10-30T14:20:00"
+  },
+  {
+    "Id": 2,
+    "Titulo": "Irradiação de alimentos para conservação e controle fitossanitário",
+    "Area": 3,
+    "Url": "https://www.ipen.br/portal_por/portal/interna.php?secao_id=40",
+    "StatusAnalise": 0,
+    "JustificativaAnalise": "",
+    "DataCriacao": "2026-10-31T10:15:00"
+  },
+  {
+    "Id": 3,
+    "Titulo": "Desenvolvimento do Laboratório de Geração de Energia Nucleoelétrica (LABGENE)",
+    "Area": 1,
+    "Url": "https://www.marinha.mil.br/ctmsp/labgene",
+    "StatusAnalise": 0,
+    "JustificativaAnalise": "",
+    "DataCriacao": "2026-10-31T18:00:00"
+  }
+]
