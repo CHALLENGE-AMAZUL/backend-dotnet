@@ -42,9 +42,9 @@ public class PropostaService
 		Console.WriteLine("Área: " + p.Area);
 		Console.WriteLine("Url: " + p.Url);
 		Console.WriteLine("Status da Análise de proposta: " + p.StatusAnalise);
-		Console.WriteLine("Justificativa de aprovação ou não: " + (string.IsNullOrWhiteSpace(p.JustificativaAnalise) ? "Pendente de análise" : p.JustificativaAnalise));
-		Console.WriteLine("Data da criação da proposta: " + p.DataCriacao.ToString("dd/MM/yyyy HH:mm:ss"));
-		Console.WriteLine("---------------------------");
+		Console.WriteLine("Justificativa de aprovação/recusa: " + (string.IsNullOrWhiteSpace(p.JustificativaAnalise) ? "Pendente de análise" : p.JustificativaAnalise));
+		Console.WriteLine("Data da criação da proposta: " + p.DataCriacao.ToString("dd/MM/yyyy HH:mm"));
+		Console.WriteLine("---------------------------------------");
 	}
 
 	public List<PropostaConteudo> ListarPropostas()

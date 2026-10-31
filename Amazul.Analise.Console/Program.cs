@@ -51,7 +51,7 @@ public class Program
                         service.RejeitarProposta(idRejeitar, justificativaRejeicao);
                         break;
                     case 0:
-                        Console.WriteLine("Encerrando o sistema de curadoria Lumar...");
+                        Console.WriteLine("Encerrando o sistema de curadoria...");
                         return;
                     default:
                         Console.WriteLine("Opção inválida! Por favor, escolha uma opção de 0 a 7.");
