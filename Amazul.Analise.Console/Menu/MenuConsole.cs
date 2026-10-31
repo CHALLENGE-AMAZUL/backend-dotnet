@@ -2,7 +2,10 @@ public static class MenuConsole
 {
     public static void ExibirMenu()
     {
-        Console.Clear();
+        if (!Console.IsOutputRedirected)
+        {
+            Console.Clear();
+        }
         Console.WriteLine("Menu de Propostas de Conteúdo - Lumar (AMAZUL)");
         Console.WriteLine("----------------------------------------------");
         Console.WriteLine("1.   Listar todas as propostas");
@@ -61,5 +64,18 @@ public static class MenuConsole
         }
 
         return idProposta;
+    }
+
+    public static void AguardarTecla()
+    {
+        Console.WriteLine("\nPressione qualquer tecla para voltar ao menu...");
+        if (!Console.IsInputRedirected)
+        {
+            Console.ReadKey();
+        }
+        else
+        {
+            Console.ReadLine();
+        }
     }
 }

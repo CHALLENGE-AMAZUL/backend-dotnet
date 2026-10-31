@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 public class PropostaService
@@ -7,18 +8,34 @@ public class PropostaService
 
 	private static string ResolverCaminhoArquivo()
 	{
-		if (File.Exists("propostas.json"))
+		// 1. Procura a pasta do projeto (onde está o .csproj) subindo a partir de AppContext.BaseDirectory (ex: bin/Debug/net10.0)
+		var diretorio = new DirectoryInfo(AppContext.BaseDirectory);
+		while (diretorio != null)
 		{
-			return "propostas.json";
+			string csproj = Path.Combine(diretorio.FullName, "Amazul.Console.csproj");
+			string candidatoProjeto = Path.Combine(diretorio.FullName, "propostas.json");
+			if (File.Exists(csproj))
+			{
+				return candidatoProjeto;
+			}
+
+			string candidatoSubpasta = Path.Combine(diretorio.FullName, "Amazul.Analise.Console", "propostas.json");
+			if (File.Exists(candidatoSubpasta))
+			{
+				return candidatoSubpasta;
+			}
+
+			diretorio = diretorio.Parent;
 		}
 
-		string caminhoSubpasta = Path.Combine("Amazul.Analise.Console", "propostas.json");
-		if (File.Exists(caminhoSubpasta))
+		// 2. Fallback para o diretório de trabalho atual
+		string subpastaAtual = Path.Combine("Amazul.Analise.Console", "propostas.json");
+		if (File.Exists(subpastaAtual))
 		{
-			return caminhoSubpasta;
+			return Path.GetFullPath(subpastaAtual);
 		}
 
-		return "propostas.json";
+		return Path.GetFullPath("propostas.json");
 	}
 	
 	public void ExibirLista(List<PropostaConteudo> lista)
@@ -95,7 +112,8 @@ public class PropostaService
 		{
 			var complemento = new JsonSerializerOptions
 			{
-				WriteIndented = true
+				WriteIndented = true,
+				Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
 			};
 			string json = JsonSerializer.Serialize(propostas, complemento);
 			File.WriteAllText(_nomeArquivo, json);

@@ -9,7 +9,13 @@ public class Program
             try
             {
                 MenuConsole.ExibirMenu();
-                if (!int.TryParse(Console.ReadLine(), out int opc))
+                var entradaMenu = Console.ReadLine();
+                if (entradaMenu == null)
+                {
+                    return;
+                }
+
+                if (!int.TryParse(entradaMenu.Trim(), out int opc))
                 {
                     opc = -1;
                 }
@@ -58,14 +64,12 @@ public class Program
                         break;
                 }
 
-                Console.WriteLine("\nPressione qualquer tecla para voltar ao menu...");
-                Console.ReadKey();
+                MenuConsole.AguardarTecla();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro: {ex.Message}");
-                Console.WriteLine("\nPressione qualquer tecla para voltar ao menu...");
-                Console.ReadKey();
+                MenuConsole.AguardarTecla();
             }
         }
     }
