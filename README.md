@@ -91,11 +91,11 @@ A aplicação segue uma divisão modular de responsabilidades:
 
 **Grupo:** Lumar — Challenge AMAZUL (2TDS)
 
-| Integrante | RM | Atuação no Projeto Integrado (Lumar) |
-|---|---|---|
-| Paulo Cavalcante Caroba | 566667 | Arquitetura e Desenvolvimento .NET (Models, Services, Persistência JSON e CLI) |
-| Renan da Silva Paulino | 566610 | Modelagem de Domínio Integrada (.NET / Java) e Regras de Curadoria |
-| Sérgio Henrique S. Santos | 567254 | Especificação Funcional, Integração de Ecossistema e Documentação Técnica |
+| Integrante | RM |
+|---|---|
+| Paulo Cavalcante Caroba | 566667 |
+| Renan da Silva Paulino | 566610 |
+| Sérgio Henrique S. Santos | 567254 |
 
 ## Instruções para execução do projeto
 
