@@ -31,7 +31,7 @@ Nesta **Sprint 1**, foi desenvolvida uma **Prova de Conceito (PoC) em Aplicaçã
 - Regras de negócio para o ciclo de vida editorial (submissão inicial em análise, aprovação e rejeição exigindo parecer técnico mínimo de 10 caracteres e bloqueio de transições inválidas de status);
 - Operações interativas via console para cadastro, listagem geral, busca por ID e filtragem com LINQ (por status `EmAnalise` e por `AreaAplicacao`);
 - Tratamento de exceções com blocos `try/catch` garantindo resiliência na interação via terminal;
-- Persistência de dados em arquivo JSON (`propostas.json`) utilizando `System.Text.Json`.
+- Persistência de dados em arquivo JSON (`propostas.json`) utilizando `System.Text.Json`, com resolução automática do caminho do arquivo tanto via CLI (`dotnet run`) quanto via IDE (Visual Studio / Rider).
 
 ## Como a aplicação em .NET se aplica à solução Java
 
@@ -69,7 +69,7 @@ A aplicação segue uma divisão modular de responsabilidades:
 - **`Services/` (`PropostaService.cs`)**: Camada de regras de negócio e persistência. Gerencia o cadastro, consultas filtradas com LINQ (`Where`, `FirstOrDefault`, `Max`), transições de aprovação/rejeição e leitura/gravação no arquivo JSON via `System.Text.Json`.
 - **`Menu/` (`MenuConsole.cs`)**: Camada de interface em linha de comando (CLI) responsável pela exibição do menu interativo, leitura segura e validação de entradas numéricas do usuário.
 - **`Program.cs`**: Ponto de entrada (`Main`) que orquestra o loop de execução da aplicação Console e centraliza o tratamento de erros com `try/catch`.
-- **`propostas.json`**: Arquivo de persistência local em formato JSON que mantém o estado das propostas cadastradas e avaliadas entre diferentes execuções do sistema.
+- **`propostas.json`**: Arquivo de persistência local em formato JSON que mantém o estado das propostas cadastradas e avaliadas entre diferentes execuções do sistema (pré-populado com propostas reais sobre tecnologia nuclear).
 
 ## Funcionalidades
 
@@ -91,13 +91,15 @@ A aplicação segue uma divisão modular de responsabilidades:
 
 **Grupo:** Lumar — Challenge AMAZUL (2TDS)
 
-| Integrante | RM |
-|---|---|
-| Sérgio Henrique S. Santos | 567254 |
-| Paulo Cavalcante Caroba | 566667 |
-| Renan da Silva Paulino | 566610 |
+| Integrante | RM | Atuação no Projeto Integrado (Lumar) |
+|---|---|---|
+| Paulo Cavalcante Caroba | 566667 | Arquitetura e Desenvolvimento .NET (Models, Services, Persistência JSON e CLI) |
+| Renan da Silva Paulino | 566610 | Modelagem de Domínio Integrada (.NET / Java) e Regras de Curadoria |
+| Sérgio Henrique S. Santos | 567254 | Especificação Funcional, Integração de Ecossistema e Documentação Técnica |
 
 ## Instruções para execução do projeto
+
+### Opção 1 — Via Terminal (CLI)
 
 1. Clone o repositório e acesse a pasta do projeto Console:
 ```bash
@@ -111,7 +113,12 @@ dotnet build
 dotnet run
 ```
 
-*(Opcional) Para executar diretamente a partir da raiz do repositório:*
+*(Alternativa a partir da raiz do repositório):*
 ```bash
 dotnet run --project Amazul.Analise.Console/Amazul.Console.csproj
 ```
+
+### Opção 2 — Via IDE (Visual Studio 2022+ ou JetBrains Rider)
+
+1. Abra o arquivo de solução `backend-dotnet.slnx` (ou `Amazul.Analise.Console/Amazul.Console.csproj`).
+2. Pressione **F5** (ou clique em **Run**). A aplicação localizará automaticamente o arquivo `Amazul.Analise.Console/propostas.json` com os registros iniciais.
